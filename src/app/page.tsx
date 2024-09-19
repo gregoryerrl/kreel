@@ -1,13 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Brain,
-  Youtube,
-  Wand2,
-  Sparkles,
-  TrendingUp,
-  Menu,
-} from "lucide-react";
+import { Brain, Youtube, Wand2, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 export default function KreelLandingPage() {
@@ -55,8 +48,8 @@ export default function KreelLandingPage() {
                     Supercharge Your YouTube Channel with AI
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Kreel's YouTube Tools use cutting-edge AI to optimize your
-                    content, boost engagement, and grow your audience.
+                    Kreel&apos;s YouTube Tools use cutting-edge AI to optimize
+                    your content, boost engagement, and grow your audience.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -75,7 +68,7 @@ export default function KreelLandingPage() {
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">
-              Kreel's YouTube Tools
+              Kreel&apos;s YouTube Tools
             </h2>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               <div className="flex flex-col items-center text-center">
@@ -165,7 +158,7 @@ export default function KreelLandingPage() {
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Join thousands of content creators who have boosted their
-                  views and subscribers with Kreel's YouTube Tools.
+                  views and subscribers with Kreel&apos;s YouTube Tools.
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
