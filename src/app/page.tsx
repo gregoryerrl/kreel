@@ -1,9 +1,41 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Brain, Youtube, Wand2, Sparkles, TrendingUp } from "lucide-react";
+import {
+  Brain,
+  Youtube,
+  Wand2,
+  Sparkles,
+  TrendingUp,
+  Menu,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function KreelLandingPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    const id = session?.user?.id;
+
+    // Check if the session is not loading and user id exists
+    if (id && status !== "loading") {
+      router.push("/dashboard");
+    }
+  }, [session, status, router]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>; // Optionally render a loading state
+  }
   return (
     <div className="flex flex-col min-h-screen font-sans">
       <header className="px-4 lg:px-6 h-14 flex items-center h-[10vh]">
@@ -11,7 +43,7 @@ export default function KreelLandingPage() {
           <Brain className="h-6 w-6 text-primary" />
           <span className="ml-2 text-2xl font-bold">Kreel</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
+        <nav className="ml-auto hidden lg:flex items-center gap-4 sm:gap-6">
           <Link
             className="text-sm font-medium hover:underline underline-offset-4"
             href="#"
@@ -36,7 +68,67 @@ export default function KreelLandingPage() {
           >
             Contact
           </Link>
+          <Link
+            className="text-sm font-bold underline hover:font-extrabold underline-offset-4 transition ease-in-out duration-150"
+            href="/auth/login"
+          >
+            Sign in
+          </Link>
+          <Link
+            className="bg-red-700 py-2 px-5 rounded-full text-sm font-bold hover:bg-red-400 underline-offset-4 transition ease-in-out duration-150"
+            href="#"
+          >
+            Get Started
+          </Link>
         </nav>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="ml-auto relative rounded-full lg:hidden"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="flex flex-col gap-y-5 py-5 px-4 items-center bg-gray-400">
+            <Link
+              className="text-sm font-medium hover:underline underline-offset-4"
+              href="#"
+            >
+              Features
+            </Link>
+            <Link
+              className="text-sm font-medium hover:underline underline-offset-4"
+              href="#"
+            >
+              Pricing
+            </Link>
+            <Link
+              className="text-sm font-medium hover:underline underline-offset-4"
+              href="#"
+            >
+              About
+            </Link>
+            <Link
+              className="text-sm font-medium hover:underline underline-offset-4"
+              href="#"
+            >
+              Contact
+            </Link>
+            <Link
+              className="text-sm font-bold underline hover:font-extrabold underline-offset-4 transition ease-in-out duration-150"
+              href="/auth/login"
+            >
+              Sign in
+            </Link>
+            <Link
+              className="bg-red-700 text-white py-2 px-5 rounded-full text-sm font-bold hover:bg-red-400 underline-offset-4 transition ease-in-out duration-150"
+              href="#"
+            >
+              Get Started
+            </Link>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
       <main className="flex-1">
         <section className="w-full flex items-center bg-gradient-to-r from-red-500/10 via-primary/5 to-background h-[90vh]">
