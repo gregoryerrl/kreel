@@ -45,56 +45,57 @@ const handler = NextAuth({
   ],
   callbacks: {
     async signIn({ account, profile }) {
-      await connectToDatabase();
+      try {
+        // Only handle Google provider
+        if (account?.provider === "google" && profile?.email) {
+          await connectToDatabase();
 
-      if (account?.provider !== "google" || !profile?.email) {
-        return false; // Return false to prevent the sign-in
-      }
-      // Handle Google sign-in
-      if (account?.provider === "google") {
-        // Check if user with Google email already exists
-        const existingUser = await prisma.user.findFirst({
-          where: { email: profile?.email },
-        });
+          // Find existing user with the same email
+          const existingUser = await prisma.user.findFirst({
+            where: { email: profile.email },
+          });
 
-        if (existingUser) {
-          // If user exists, link Google account if it's not already linked
-          if (!existingUser.googleId) {
-            await prisma.user.update({
-              where: { email: profile?.email },
-              data: { googleId: account?.providerAccountId },
+          if (existingUser) {
+            // Link Google account if not already linked
+            if (!existingUser.googleId) {
+              await prisma.user.update({
+                where: { email: profile.email },
+                data: { googleId: account.providerAccountId },
+              });
+            }
+          } else {
+            // Create new user if one doesn't exist
+            await prisma.user.create({
+              data: {
+                email: profile.email,
+                googleId: account.providerAccountId,
+                name: profile.name,
+              },
             });
           }
           return true; // Sign in success
-        } else {
-          // Create new user if one doesn't exist
-          await prisma.user.create({
-            data: {
-              email: profile.email,
-              googleId: account?.providerAccountId,
-              name: profile?.name,
-            },
-          });
-          return true; // Sign in success
         }
+        return false; // Prevent sign-in if not Google or missing email
+      } catch (error) {
+        console.error("Error in signIn callback:", error);
+        return false; // Fail the sign-in process in case of errors
       }
-      return true;
     },
 
-    // This is called to customize the token before sending to the client
+    // Customize JWT creation before sending to the client
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = user.id; // Add user ID to the token
       }
-      return token;
+      return token; // Return token as-is if no user data is available
     },
 
-    // This function is triggered whenever a session is checked or created
+    // Customize the session object
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
+      if (token?.id) {
+        session.user.id = token.id; // Attach the user ID to the session
       }
-      return session;
+      return session; // Return the session object
     },
   },
 
