@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,6 +21,7 @@ import {
   Youtube,
   Sparkles,
   TrendingUp,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
@@ -29,102 +31,120 @@ import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const sidebarRef = useRef<HTMLDivElement>(null);
+  const { data: session } = useSession();
   const router = useRouter();
-  const { data: session, status } = useSession();
 
   const user = session?.user;
-
-  if (status === "loading") {
-    return <div>Loading...</div>; // Optionally render a loading state
-  }
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push("/");
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // Check if the sidebar is open and if the clicked element is outside the sidebar
-      if (
-        isSidebarOpen &&
-        sidebarRef.current &&
-        !sidebarRef.current.contains(event.target as Node)
-      ) {
-        setIsSidebarOpen(false); // Close the sidebar
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(false);
       }
     };
 
-    // Add event listener to listen for clicks on the document
-    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-    // Cleanup function to remove event listener when component unmounts
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isSidebarOpen, setIsSidebarOpen]);
+  const handleSignOut = async () => {
+    try {
+      await signOut({ redirect: false });
+      router.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <div className="flex h-screen text-white">
+    <div className="flex h-screen bg-gray-900 text-gray-100">
+      {/* Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={closeSidebar}
+        ></div>
+      )}
+
       {/* Sidebar */}
       <aside
-        ref={sidebarRef} // Attach the ref to the sidebar
-        className={`bg-gray-950 w-64 p-4 flex flex-col transition-all duration-300 ease-in-out text-gray-400 ${
+        className={`bg-gray-800 w-64 p-4 flex flex-col transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 fixed lg:static h-full z-50`}
       >
-        <div className="flex items-center mb-8">
-          <Brain className="h-8 w-8 text-gray-400 mr-2" />
-          <span className="text-2xl font-bold">Kreel</span>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center">
+            <Brain className="h-8 w-8 text-blue-400 mr-2" />
+            <span className="text-2xl font-bold text-white">Kreel</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={closeSidebar}
+            className="lg:hidden text-gray-400 hover:text-white"
+          >
+            <X className="h-6 w-6" />
+          </Button>
         </div>
         <nav className="flex-1">
           <ul className="space-y-2">
             <li>
               <Link
                 href="#youtube-tools"
-                className="flex items-center p-2 rounded-lg hover:bg-primary/10 text-foreground"
+                className="flex items-center p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
+                onClick={closeSidebar}
               >
-                <Youtube className="h-5 w-5 mr-3 text-gray-400" />
+                <Youtube className="h-5 w-5 mr-3 text-blue-400" />
                 YouTube Tools
               </Link>
             </li>
             <li>
               <Link
                 href="#title-optimizer"
-                className="flex items-center p-2 rounded-lg hover:bg-primary/10 text-foreground"
+                className="flex items-center p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
+                onClick={closeSidebar}
               >
-                <Wand2 className="h-5 w-5 mr-3 text-gray-400" />
+                <Wand2 className="h-5 w-5 mr-3 text-blue-400" />
                 Title Optimizer
               </Link>
             </li>
             <li>
               <Link
                 href="#thumbnail-creator"
-                className="flex items-center p-2 rounded-lg hover:bg-primary/10 text-foreground"
+                className="flex items-center p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
+                onClick={closeSidebar}
               >
-                <Sparkles className="h-5 w-5 mr-3 text-gray-400" />
+                <Sparkles className="h-5 w-5 mr-3 text-blue-400" />
                 Thumbnail Creator
               </Link>
             </li>
             <li>
               <Link
                 href="#trend-analyzer"
-                className="flex items-center p-2 rounded-lg hover:bg-primary/10 text-foreground"
+                className="flex items-center p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
+                onClick={closeSidebar}
               >
-                <TrendingUp className="h-5 w-5 mr-3 text-gray-400" />
+                <TrendingUp className="h-5 w-5 mr-3 text-blue-400" />
                 Trend Analyzer
               </Link>
             </li>
           </ul>
         </nav>
         <div className="mt-auto">
-          <Button variant="outline" className="w-full justify-start" asChild>
-            <Link href="/settings">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-gray-300 hover:text-white border-gray-600 hover:bg-gray-700"
+            asChild
+          >
+            <Link href="/settings" onClick={closeSidebar}>
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </Link>
@@ -135,44 +155,56 @@ export default function Dashboard() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-gray-900 p-4 flex items-center justify-between">
+        <header className="bg-gray-800 border-b border-gray-700 p-4 flex items-center justify-between">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="lg:hidden text-gray-400 hover:text-white"
             onClick={toggleSidebar}
           >
             <Menu className="h-6 w-6" />
           </Button>
-          <div className="flex gap-2 lg-hidden">
-            <Brain className="h-8 w-8 text-gray-400" />
-            <h1 className="text-2xl font-bold">Kreel</h1>
-          </div>
+          <h1 className="text-2xl font-bold text-white lg:hidden">Kreel</h1>
           <div className="flex items-center space-x-4">
             <Input
               type="search"
               placeholder="Search..."
-              className="w-64 hidden md:block"
+              className="w-64 hidden md:block bg-gray-700 text-white placeholder-gray-400 border-gray-600"
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative rounded-full">
-                  <span className="font-bold underline">{user?.name}</span>
+                  <span>{user?.name}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
+              <DropdownMenuContent
+                align="end"
+                className="w-56 bg-gray-800 text-gray-100 border border-gray-700"
+              >
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user?.name}
+                    </p>
+                    <p className="text-xs leading-none text-gray-400">
+                      {user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem className="hover:bg-gray-700">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-gray-700">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleSignOut()}>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem
+                  className="hover:bg-gray-700"
+                  onClick={() => handleSignOut()}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
@@ -182,30 +214,34 @@ export default function Dashboard() {
         </header>
 
         {/* Main dashboard content */}
-        <main className="flex-1 overflow-y-auto p-6 bg-muted/40 bg-white text-gray-700">
-          <h2 className="text-3xl font-bold mb-6">
+        <main className="flex-1 overflow-y-auto p-6 bg-gray-900">
+          <h2 className="text-3xl font-bold mb-6 text-white">
             Welcome back, {user?.name?.split(" ")[0]}
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className=" p-6 rounded-lg shadow-xl">
-              <h3 className="text-xl font-semibold mb-4">YouTube Analytics</h3>
-              <p className="text-muted-foreground">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h3 className="text-xl font-semibold mb-4 text-white">
+                YouTube Analytics
+              </h3>
+              <p className="text-gray-400">
                 Your channel performance at a glance.
               </p>
               {/* Add YouTube analytics content here */}
             </div>
-            <div className="bg-background p-6 rounded-lg shadow-xl">
-              <h3 className="text-xl font-semibold mb-4">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h3 className="text-xl font-semibold mb-4 text-white">
                 Recent Optimizations
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-gray-400">
                 Your latest AI-powered improvements.
               </p>
               {/* Add recent optimizations content here */}
             </div>
-            <div className="bg-background p-6 rounded-lg shadow-xl">
-              <h3 className="text-xl font-semibold mb-4">Trending Topics</h3>
-              <p className="text-muted-foreground">Hot topics in your niche.</p>
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h3 className="text-xl font-semibold mb-4 text-white">
+                Trending Topics
+              </h3>
+              <p className="text-gray-400">Hot topics in your niche.</p>
               {/* Add trending topics content here */}
             </div>
           </div>

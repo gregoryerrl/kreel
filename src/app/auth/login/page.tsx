@@ -29,38 +29,19 @@ export default function SignInPage() {
     setShowPassword(!showPassword);
   };
 
-  const handleSignIn = async (
-    e: React.FormEvent,
-    provider: "credentials" | "google" // Accept the provider type as a parameter
-  ) => {
+  const handleSignIn = async (e: any) => {
     e.preventDefault();
 
     // Handle Credentials sign-in
-    if (provider === "credentials") {
-      const res = await signIn("credentials", {
-        redirect: false, // Prevents automatic redirection
-        email,
-        password,
-      });
 
-      if (res?.error) {
-        setError(res.error); // Handle the error for credentials sign-in
-      } else {
-        router.push("/dashboard"); // Redirect to dashboard or any protected page
-      }
-    }
+    const res = await signIn("google", {
+      redirect: false,
+    });
 
-    // Handle Google sign-in
-    if (provider === "google") {
-      const res = await signIn("google", {
-        redirect: false,
-      });
-
-      if (res?.error) {
-        setError(res.error); // Handle the error for Google sign-in
-      } else {
-        router.push("/dashboard"); // Redirect to dashboard or any protected page
-      }
+    if (res?.error) {
+      setError(res.error); // Handle the error for Google sign-in
+    } else {
+      console.log(res); // Redirect to dashboard or any protected page
     }
   };
 
@@ -74,10 +55,7 @@ export default function SignInPage() {
             Enter your details to access your account
           </p>
         </div>
-        <form
-          onSubmit={(e) => handleSignIn(e, "credentials")}
-          className="space-y-4"
-        >
+        <form onSubmit={(e) => handleSignIn(e)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -148,7 +126,7 @@ export default function SignInPage() {
           <Button
             variant="outline"
             className="w-full"
-            onClick={(e) => handleSignIn(e, "google")}
+            onClick={(e) => handleSignIn(e)}
           >
             <svg
               className="w-5 h-5 mr-2"

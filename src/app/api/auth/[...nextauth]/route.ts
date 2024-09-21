@@ -11,76 +11,76 @@ const handler = NextAuth({
       clientId: process.env.GOOGLE_ID ?? "",
       clientSecret: process.env.GOOGLE_SECRET ?? "",
     }),
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Emails", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        await connectToDatabase();
+    // CredentialsProvider({
+    //   name: "Credentials",
+    //   credentials: {
+    //     email: { label: "Emails", type: "email" },
+    //     password: { label: "Password", type: "password" },
+    //   },
+    //   async authorize(credentials) {
+    //     await connectToDatabase();
 
-        console.log(credentials);
-        if (!credentials || !credentials.email || !credentials.password)
-          return null;
+    //     console.log(credentials);
+    //     if (!credentials || !credentials.email || !credentials.password)
+    //       return null;
 
-        const user = await prisma.user.findFirst({
-          where: { email: credentials.email },
-        });
+    //     const user = await prisma.user.findFirst({
+    //       where: { email: credentials.email },
+    //     });
 
-        if (user) {
-          if (!user.password) return null;
-          const isPasswordCorrect = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
+    //     if (user) {
+    //       if (!user.password) return null;
+    //       const isPasswordCorrect = await bcrypt.compare(
+    //         credentials.password,
+    //         user.password
+    //       );
 
-          console.log(isPasswordCorrect);
+    //       console.log(isPasswordCorrect);
 
-          if (isPasswordCorrect) return user;
-        }
-        return null;
-      },
-    }),
+    //       if (isPasswordCorrect) return user;
+    //     }
+    //     return null;
+    //   },
+    // }),
   ],
   callbacks: {
-    async signIn({ account, profile }) {
-      try {
-        // Only handle Google provider
-        if (account?.provider === "google" && profile?.email) {
-          await connectToDatabase();
+    // async signIn({ account, profile }) {
+    //   try {
+    //     // Only handle Google provider
+    //     if (account?.provider === "google" && profile?.email) {
+    //       await connectToDatabase();
 
-          // Find existing user with the same email
-          const existingUser = await prisma.user.findFirst({
-            where: { email: profile.email },
-          });
+    //       // Find existing user with the same email
+    //       const existingUser = await prisma.user.findFirst({
+    //         where: { email: profile.email },
+    //       });
 
-          if (existingUser) {
-            // Link Google account if not already linked
-            if (!existingUser.googleId) {
-              await prisma.user.update({
-                where: { email: profile.email },
-                data: { googleId: account.providerAccountId },
-              });
-            }
-          } else {
-            // Create new user if one doesn't exist
-            await prisma.user.create({
-              data: {
-                email: profile.email,
-                googleId: account.providerAccountId,
-                name: profile.name,
-              },
-            });
-          }
-          return true; // Sign in success
-        }
-        return false; // Prevent sign-in if not Google or missing email
-      } catch (error) {
-        console.error("Error in signIn callback:", error);
-        return false; // Fail the sign-in process in case of errors
-      }
-    },
+    //       if (existingUser) {
+    //         // Link Google account if not already linked
+    //         if (!existingUser.googleId) {
+    //           await prisma.user.update({
+    //             where: { email: profile.email },
+    //             data: { googleId: account.providerAccountId },
+    //           });
+    //         }
+    //       } else {
+    //         // Create new user if one doesn't exist
+    //         await prisma.user.create({
+    //           data: {
+    //             email: profile.email,
+    //             googleId: account.providerAccountId,
+    //             name: profile.name,
+    //           },
+    //         });
+    //       }
+    //       return true; // Sign in success
+    //     }
+    //     return false; // Prevent sign-in if not Google or missing email
+    //   } catch (error) {
+    //     console.error("Error in signIn callback:", error);
+    //     return false; // Fail the sign-in process in case of errors
+    //   }
+    // },
 
     // Customize JWT creation before sending to the client
     async jwt({ token, user }) {
