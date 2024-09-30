@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Avatar } from "./ui/avatar";
 import { fetchYoutubeChannels } from "@/app/actions/youtubeActions";
+import Link from "next/link";
 
 interface ChannelData {
   channelName: string;
@@ -77,11 +78,13 @@ export default function YouTubeChannelFinder() {
                 className="bg-gray-700 p-4 rounded-lg flex items-start space-x-4"
               >
                 <Avatar className="w-16 h-16">
-                  <img
-                    src={channel.channelThumbnail}
-                    alt={channel.channelName}
-                    className="rounded-full"
-                  />
+                  <Link href={channel.channelUrl} target="_blank">
+                    <img
+                      src={channel.channelThumbnail}
+                      alt={channel.channelName}
+                      className="rounded-full"
+                    />
+                  </Link>
                 </Avatar>
                 <div className="flex-1">
                   <h4 className="text-lg font-semibold text-white">
