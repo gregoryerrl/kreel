@@ -22,15 +22,21 @@ import {
   Sparkles,
   TrendingUp,
   X,
+  Search,
 } from "lucide-react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import ChannelFinder from "@/components/ChannelFinder";
+import YoutubeTools from "@/components/YoutubeTools";
 
-// Mock user data
+// YouTube Tools Component
+
+// YouTube Channel Finder Component
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState("home");
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -61,6 +67,53 @@ export default function Dashboard() {
       router.push("/");
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const renderContent = () => {
+    switch (currentPage) {
+      case "home":
+        return (
+          <>
+            <h2 className="text-3xl font-bold mb-6 text-white">
+              Welcome back, {user?.name?.split(" ")[0]}
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  YouTube Analytics
+                </h3>
+                <p className="text-gray-400">
+                  Your channel performance at a glance.
+                </p>
+              </div>
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Recent Optimizations
+                </h3>
+                <p className="text-gray-400">
+                  Your latest AI-powered improvements.
+                </p>
+              </div>
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+                <h3 className="text-xl font-semibold mb-4 text-white">
+                  Trending Topics
+                </h3>
+                <p className="text-gray-400">Hot topics in your niche.</p>
+              </div>
+            </div>
+          </>
+        );
+      case "youtube-tools":
+        return (
+          <YoutubeTools
+            setFinderPage={() => setCurrentPage("channel-finder")}
+          />
+        );
+      case "channel-finder":
+        return <ChannelFinder />;
+      default:
+        return <div>Page not found</div>;
     }
   };
 
@@ -97,44 +150,43 @@ export default function Dashboard() {
         <nav className="flex-1">
           <ul className="space-y-2">
             <li>
-              <Link
-                href="#youtube-tools"
-                className="flex items-center p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
-                onClick={closeSidebar}
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700"
+                onClick={() => {
+                  setCurrentPage("home");
+                  closeSidebar();
+                }}
+              >
+                <User className="h-5 w-5 mr-3 text-blue-400" />
+                Dashboard
+              </Button>
+            </li>
+            <li>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700"
+                onClick={() => {
+                  setCurrentPage("youtube-tools");
+                  closeSidebar();
+                }}
               >
                 <Youtube className="h-5 w-5 mr-3 text-blue-400" />
                 YouTube Tools
-              </Link>
+              </Button>
             </li>
             <li>
-              <Link
-                href="#title-optimizer"
-                className="flex items-center p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
-                onClick={closeSidebar}
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700 pl-12"
+                onClick={() => {
+                  setCurrentPage("channel-finder");
+                  closeSidebar();
+                }}
               >
-                <Wand2 className="h-5 w-5 mr-3 text-blue-400" />
-                Title Optimizer
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="#thumbnail-creator"
-                className="flex items-center p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
-                onClick={closeSidebar}
-              >
-                <Sparkles className="h-5 w-5 mr-3 text-blue-400" />
-                Thumbnail Creator
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="#trend-analyzer"
-                className="flex items-center p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
-                onClick={closeSidebar}
-              >
-                <TrendingUp className="h-5 w-5 mr-3 text-blue-400" />
-                Trend Analyzer
-              </Link>
+                <Search className="h-5 w-5 mr-3 text-blue-400" />
+                Channel Finder
+              </Button>
             </li>
           </ul>
         </nav>
@@ -215,36 +267,7 @@ export default function Dashboard() {
 
         {/* Main dashboard content */}
         <main className="flex-1 overflow-y-auto p-6 bg-gray-900">
-          <h2 className="text-3xl font-bold mb-6 text-white">
-            Welcome back, {user?.name?.split(" ")[0]}
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold mb-4 text-white">
-                YouTube Analytics
-              </h3>
-              <p className="text-gray-400">
-                Your channel performance at a glance.
-              </p>
-              {/* Add YouTube analytics content here */}
-            </div>
-            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold mb-4 text-white">
-                Recent Optimizations
-              </h3>
-              <p className="text-gray-400">
-                Your latest AI-powered improvements.
-              </p>
-              {/* Add recent optimizations content here */}
-            </div>
-            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold mb-4 text-white">
-                Trending Topics
-              </h3>
-              <p className="text-gray-400">Hot topics in your niche.</p>
-              {/* Add trending topics content here */}
-            </div>
-          </div>
+          {renderContent()}
         </main>
       </div>
     </div>

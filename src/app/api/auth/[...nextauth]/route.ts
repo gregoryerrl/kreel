@@ -11,6 +11,8 @@ const handler = NextAuth({
       clientId: process.env.GOOGLE_ID ?? "",
       clientSecret: process.env.GOOGLE_SECRET ?? "",
     }),
+    // --------------------------DOESNT WORK NEED REFACTORING---------------------
+    //
     // CredentialsProvider({
     //   name: "Credentials",
     //   credentials: {
@@ -44,6 +46,8 @@ const handler = NextAuth({
     // }),
   ],
   callbacks: {
+    // --------------------------DOESNT WORK NEED REFACTORING---------------------
+    //
     // async signIn({ account, profile }) {
     //   try {
     //     // Only handle Google provider
